@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "hello"
+name = "VIII_collections"
 version = "0.1.0"
