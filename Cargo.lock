@@ -3,5 +3,9 @@
 version = 3
 
 [[package]]
-name = "VIII_collections"
+name = "ix_error"
+version = "0.1.0"
+
+[[package]]
+name = "viii_collections"
 version = "0.1.0"
