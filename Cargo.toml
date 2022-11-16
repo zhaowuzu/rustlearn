@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "viii_collections",
-    "ix_error"
+    "ix_error",
+    "x_generics_trait",
 ]
