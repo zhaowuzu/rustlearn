@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/i_vii/src/learn_restaurant/my-project/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/viii_collections/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ix_error/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/x_generics_trait/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/i_vii/src/learn_restaurant/my-project/target" />
     </content>
