@@ -1,5 +1,6 @@
 mod generics_test;
 mod trait_test;
+mod lifttime_test;
 use trait_test::Summary; // 这个地方要把接口给带过来，否则确实找不到对应的方法
 use std::fmt::Display;
 use std::fmt::Debug;
@@ -12,82 +13,23 @@ fn main(){
     // trait_demo
 
     // 生命周期的展示demo
-    lifttime_demo()
+    lifttime_test::lifttime_demo()
+
+
 }
 
-/******************************生命周期的展示demo************************************/
-fn lifttime_demo(){
-    // 尝试在值离开作用域时使用指向它的引用
-    // {
-    //     let r;
-    //     {
-    //         let x = 5;
-    //         r = &x; // borrowed value does not live long enough
-    //     }
-    //     println!("r:{}",r);
-    // }
-    // 第一种变体 都行
-    {
-        let r;
-        let x = 5;
-        r = &x;
-        println!("r:{}",r);
-    }
-    // 第二种变体
-    {
-        let x = 5;
-        let r;
-        r = &x;
-        println!("r:{}",r);
-    }
-
-    //函数中的泛型生命周期
-    let string1 = String::from("abcd");
-    let string2 = "xyz";
-    let result = longest(string1.as_str(),string2);
-    println!("The longest string is {}",result);
-    // 正常被允许
-    let string3 = String::from("long string is long");
-    {
-        let string4 = String::from("xyz");
-        let result1 = longest(string3.as_str(),string4.as_str());
-        println!("The longest string is {}",result1);
-    }
-    // 会出错
-    // let string5 = String::from("long string is long");
-    // let result2;
-    // {
-    //     let string6 = String::from("xyz");
-    //     result2 = longest(string5.as_str(),string6.as_str());// borrowed value does not live long enough
-    // }
-    // println!("The longest string is {}",result2);
-
-    // result3 获取了对应的所有权
-    let result3 = no1(string1.as_str(),string2);
-    println!("The longest string is {}",result3);
-}
-// longest 返回最大的，无法判断最后返回的时那个参数，所以就都加上了
-fn longest<'a>(x:&'a str,y:&'a str)-> &'a str { //未加'a 的报错：expected named lifetime parameter
-    if x.len() > y.len(){
+// 综合样例，结合泛型，trait,生命周期
+fn longenst_with_an_announcement<'a,T>(x:&'a str,y:&'a str,ann:T )->&'a str // 生命周期也是泛型的一种，所以生命周期参数'a和泛型参数T都被放置到了函数后的尖括号列表中。
+    where T:Display
+{
+    println!("Announcement! {}",ann);
+    if x.len() > y.len() {
         x
     }else{
         y
     }
 }
-// 只返回第一个，所以让参数1和返回结果生命周期是一样的就好了
-fn first<'a>(x:&'a str,y:& str)-> &'a str {
-        x
-}
-// 来看个有错误的
-// fn no<'a>(x:&str,y:&str)-> &'a str {
-//     let result = String::from("really long string");
-//     result.as_str() // returns a reference to data owned by the current function 返回对当前函数拥有的数据的引用
-// }
-// 这个就没问题了，这个不是引用，而是一个数据，会把所有权转移给调用者
-fn no1(x:&str,y:&str)-> String {
-    let result = String::from("really long string");
-    result
-}
+
 /******************************trait的demo和相关样例展示************************************/
 fn trait_demo(){
     // trait的demo
