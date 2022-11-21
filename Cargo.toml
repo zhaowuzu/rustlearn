@@ -3,4 +3,5 @@ members = [
     "viii_collections",
     "ix_error",
     "x_generics_trait",
+    "adder",
 ]

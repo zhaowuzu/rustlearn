@@ -3,6 +3,10 @@
 version = 3
 
 [[package]]
+name = "adder"
+version = "0.1.0"
+
+[[package]]
 name = "ix_error"
 version = "0.1.0"
 

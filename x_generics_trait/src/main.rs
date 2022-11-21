@@ -14,8 +14,6 @@ fn main(){
 
     // 生命周期的展示demo
     lifttime_test::lifttime_demo()
-
-
 }
 
 // 综合样例，结合泛型，trait,生命周期
