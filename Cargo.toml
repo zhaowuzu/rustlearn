@@ -5,4 +5,5 @@ members = [
     "x_generics_trait",
     "adder",
     "minigrep",
+    "xiii_closure_iterator",
 ]
