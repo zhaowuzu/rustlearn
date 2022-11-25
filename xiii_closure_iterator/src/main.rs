@@ -2,6 +2,7 @@ use std::thread;
 use std::time::Duration;
 use std::hash::Hash;
 use std::collections::HashMap;
+mod iterator;
 
 // 存储一个闭包和可选结构值的结构体
 struct Cacher<T,U>
@@ -48,37 +49,41 @@ U:Eq+Hash+Copy
 }
 
 fn main() {
-    let simulated_user_specified_value = 10;
-    let simulated_random_number = 7;
+    // 迭代器的demo
+    iterator::demo();
 
-    generate_workout(
-        simulated_user_specified_value,
-        simulated_random_number
-    );
 
-    // 闭包的错误用法
-    // let example_closure = |x| x ;
-    // let s = example_closure(String::from("hello"));
-    // let s = example_closure(5); // arguments to this function are incorrect
-
-    // 闭包捕获上下文环境
-    // 正向：
-    let x = 4;
-    let equal_to_x = |z| z==x;
-    let y = 4;
-    assert!(equal_to_x(y));
-    // 反向案例，函数
-    //fn equal_to_x(z:i32)-> bool{z==x};
-
-    // let y = 6;
-    // assert!(equal_to_x(y)); // 会报pannic
-
-    // move 闭包，强制获取所有权
-    let x = vec![1,2,3];
-    let equal_to_x = move |z| z==x;
-    // println!("can't use x here:{:?}",x); // value borrowed here after move 编译不会通过的
-    let y = vec![1,2,3];
-    assert!(equal_to_x(y));
+    // let simulated_user_specified_value = 10;
+    // let simulated_random_number = 7;
+    //
+    // generate_workout(
+    //     simulated_user_specified_value,
+    //     simulated_random_number
+    // );
+    //
+    // // 闭包的错误用法
+    // // let example_closure = |x| x ;
+    // // let s = example_closure(String::from("hello"));
+    // // let s = example_closure(5); // arguments to this function are incorrect
+    //
+    // // 闭包捕获上下文环境
+    // // 正向：
+    // let x = 4;
+    // let equal_to_x = |z| z==x;
+    // let y = 4;
+    // assert!(equal_to_x(y));
+    // // 反向案例，函数
+    // //fn equal_to_x(z:i32)-> bool{z==x};
+    //
+    // // let y = 6;
+    // // assert!(equal_to_x(y)); // 会报pannic
+    //
+    // // move 闭包，强制获取所有权
+    // let x = vec![1,2,3];
+    // let equal_to_x = move |z| z==x;
+    // // println!("can't use x here:{:?}",x); // value borrowed here after move 编译不会通过的
+    // let y = vec![1,2,3];
+    // assert!(equal_to_x(y));
 }
 
 // fn simulated_expensive_calculation(intensity:u32) -> u32 {
