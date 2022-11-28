@@ -6,4 +6,13 @@ members = [
     "adder",
     "minigrep",
     "xiii_closure_iterator",
+    "xiv_my_create",
+    "xiv_art",
+    "add_one",
 ]
+
+[profile.dev]
+opt-level = 1 #优化程度为1
+
+[profile.release]
+opt-level = 3
