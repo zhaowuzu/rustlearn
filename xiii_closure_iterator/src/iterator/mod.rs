@@ -71,3 +71,64 @@ fn filters_by_size(){
         ]
     )
 }
+
+/********************************自定义迭代器：实现Iterator trait*************************************/
+struct Counter {
+    count:u32,
+}
+impl Counter{
+    // 先来个构造器
+    fn new() -> Counter{
+        Counter{count:0}
+    }
+}
+// 实现某个trait的时候，编译器会帮助咱们拉取定义，咱们自己只要实现todo就好了
+impl Iterator for Counter{
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.count += 1;
+        if self.count < 6 {
+            Some(self.count)
+        }else {
+            None
+        }
+    }
+}
+#[test]
+fn calling_next_directly(){
+    let mut counter = Counter::new();
+
+    assert_eq!(counter.next(),Some(1));
+    assert_eq!(counter.next(),Some(2));
+    assert_eq!(counter.next(),Some(3));
+    assert_eq!(counter.next(),Some(4));
+    assert_eq!(counter.next(),Some(5));
+    assert_eq!(counter.next(),None);
+}
+#[test]
+fn using_other_iterator_trait_methods(){
+    let sum:u32 = Counter::new().zip(Counter::new().skip(1))
+        .map(|(a,b)|a*b)
+        .filter(|x|x%3==0)
+        .sum();
+    assert_eq!(18,sum);
+}
+
+/***********************************音频解码*****************************************/
+pub fn audio_decoding(){
+    let buffer:&mut[i32] = &mut []; // 需要有默认值？？
+    let coefficients:[i64;12]= [10,20,30,40,10,20,30,40,10,20,30,40];
+    let qlp_shift:i16 = 0; // 需要有默认值？？
+
+    for i in 12..buffer.len() {
+        let prediction = coefficients.iter()
+            .zip(&buffer[i-12..i])
+            .map(|(&c,&s)|c*s as i64)
+            .sum::<i64>() >> qlp_shift;
+        let delta = buffer[i];
+        buffer[i]  = prediction as i32 + delta;
+    }
+
+    println!("{:?}",buffer)
+}
