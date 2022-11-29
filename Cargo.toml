@@ -9,6 +9,7 @@ members = [
     "xiv_my_create",
     "xiv_art",
     "add_one",
+    "iv",
 ]
 
 [profile.dev]
