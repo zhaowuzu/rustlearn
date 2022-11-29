@@ -14,6 +14,7 @@
       <sourceFolder url="file://$MODULE_DIR$/add_one/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/xiv_art/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/xiv_my_create/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/iv/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/i_vii/src/learn_restaurant/my-project/target" />
     </content>
