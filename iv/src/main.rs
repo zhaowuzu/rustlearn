@@ -1,5 +1,7 @@
-use crate::List::{Cons,Nil};
+use std::rc::Rc;
+use crate::List::{Cons, Nil};
 use std::ops::Deref;
+use crate::ListRC::{ConsRC,NilRC};
 
 fn main() {
     // 再堆上存储一个i32
@@ -36,7 +38,21 @@ fn main() {
     //c.drop();// explicit use of destructor method
     drop(c);// 这个是被允许的 std::mem::drop 提前丢弃值
     let d = CustomSmartPointer{data:String::from("other stuff")};
-    println!("CustomSmartPointer created.")
+    println!("CustomSmartPointer created.");
+
+    // Rc的使用
+    let a = Rc::new(ConsRC(5,
+                Rc::new(ConsRC(10,
+                   Rc::new(NilRC)))));
+    println!("count after creating a= {}",Rc::strong_count(&a)); // strong_count强引用计数，weak_count弱引用计数
+    let b = ConsRC(3,Rc::clone(&a)); // 不会深拷贝，只会增加计数
+    //let c = ConsRC(4,a.clone()); // Rc::clone 的另一种写法，但是不是惯用写法 a.clone可能会走深拷贝？？   如果你只是要增加引用计数，那就用Rc::clone
+    println!("count after creating b= {}",Rc::strong_count(&a));
+    {
+        let c = ConsRC(4,Rc::clone(&a));
+        println!("count after creating c= {}",Rc::strong_count(&a));
+    }
+    println!("count after c goes out of scope = {}",Rc::strong_count(&a));
 }
 
 // 自建的一个list
@@ -81,3 +97,13 @@ impl Drop for CustomSmartPointer {
         println!("Dropping CustomSmartPointer with data`{}`!",self.data);
     }
 }
+
+// # 引用计数的智能指针Rc<T> :Reference counting(引用计数)
+// 使用场景一：当你希望将堆上的一些数据分享给程序多个部分同时使用，而又无法在编译期确定哪个部分会最后释放。
+// 注意：Rc<T>只能被单线程场景
+enum ListRC {
+    ConsRC(i32,Rc<ListRC>),
+    NilRC,
+}
+
+// # RefCell<T>和内部可变性模式
