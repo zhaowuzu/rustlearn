@@ -53,6 +53,10 @@ fn main() {
         println!("count after creating c= {}",Rc::strong_count(&a));
     }
     println!("count after c goes out of scope = {}",Rc::strong_count(&a));
+
+    // RefCell<T>
+   // let x = 5;
+    //let y = &mut x; // cannot borrow `x` as mutable, as it is not declared as mutable
 }
 
 // 自建的一个list
@@ -107,3 +111,8 @@ enum ListRC {
 }
 
 // # RefCell<T>和内部可变性模式
+// 注意：RefCell<T>只能单线程
+// 关键对比：Box<T>,Rc<T>还是RefCell<T>
+// 1： Rc<T>允许一份数据有多个持有者，而Box<T>,RefCell<T>都只有一个所有者。
+// 2： Box<T>允许在编译时检查的可变或者不可变借用，Rc<T>仅允许编译时检查的不可变借用，RefCell<T>允许运行时检查的可变或不可变借用。
+// 3： 由于RefCell<T>允许我们在运行时检查可变借用，所以即便RefCell<T>本身时不可变的，我们仍然能够更改其中存储的值。
