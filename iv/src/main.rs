@@ -1,7 +1,10 @@
-use std::rc::Rc;
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 use crate::List::{Cons, Nil};
 use std::ops::Deref;
 use crate::ListRC::{ConsRC,NilRC};
+use crate::List_RefCell_Rc::{Cons_RefCell_Rc,Nil_List_RefCell_Rc};
+use crate::List_Cycle::{Cons_Cycle,Nil_Cycle};
 
 fn main() {
     // 再堆上存储一个i32
@@ -56,7 +59,52 @@ fn main() {
 
     // RefCell<T>
    // let x = 5;
-    //let y = &mut x; // cannot borrow `x` as mutable, as it is not declared as mutable
+    //let y = &mut x; // cannot borrow `x` as mutable, as it is not declared as mutable.
+    let value = Rc::new(RefCell::new(5));
+    let a = Rc::new(Cons_RefCell_Rc(Rc::clone(&value),Rc::new(Nil_List_RefCell_Rc)));// clone让a和value同时拥有了5的所有权
+    // 把a接在b和c后面
+    let b = Cons_RefCell_Rc(Rc::new(RefCell::new(6)),Rc::clone(&a));
+    let c = Cons_RefCell_Rc(Rc::new(RefCell::new(10)),Rc::clone(&a));
+    *value.borrow_mut() += 10;
+    //value.borrow_mut() += 10; // binary assignment operation `+=` cannot be applied to type `RefMut<'_, i32>`
+    println!("a after = {:?}",a);
+    println!("b after = {:?}",b);
+    println!("c after = {:?}",c);
+
+    // 循环调用，溢出样例
+    let a = Rc::new(Cons_Cycle(5,RefCell::new(Rc::new(Nil_Cycle))));
+    println!("a initial rc count = {}",Rc::strong_count(&a));
+    println!("a next item = {:?}",a.tail());
+    let b = Rc::new(Cons_Cycle(10,RefCell::new(Rc::clone(&a))));
+    println!("a rc count after b creation= {}",Rc::strong_count(&a));
+    println!("b initail rc count = {}",Rc::strong_count(&b));
+    println!("b next item = {:?}",b.tail());
+    if let Some(link) = a.tail() {
+        *link.borrow_mut() = Rc::clone(&b); // 把a的第二项从原来的Nil_Cycle变成b，就构成了个环
+    }
+    println!("b rc count after changing a = {}",Rc::strong_count(&b));
+    println!("a rc count after changing a = {}",Rc::strong_count(&a));
+    // 取消下面的注释便可以观察到循环引用，它会造成栈的溢出
+    //println!("a next item = {:?}",a.tail())
+
+    // 弱引用
+    let leaf = Rc::new(Node{
+       value:3,
+        parent:RefCell::new(Weak::new()),// 只能先来一个空的了
+        children:RefCell::new(vec![]),
+    });
+    println!("leaf parent = {:?}",leaf.parent.borrow().upgrade());
+    println!("leaf strong = {},weak = {}",Rc::strong_count(&leaf),Rc::weak_count(&leaf));
+    let branch = Rc::new(Node{
+       value:5,
+        parent:RefCell::new(Weak::new()),
+        children:RefCell::new(vec![Rc::clone(&leaf)]),
+    });
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);// 给leaf挂上父节点
+    println!("branch strong = {},weak = {}",Rc::strong_count(&branch),Rc::weak_count(&branch));
+    println!("leaf strong = {},weak = {}",Rc::strong_count(&leaf),Rc::weak_count(&leaf));
+    println!("leaf parent = {:?}",leaf.parent.borrow().upgrade());
+    println!("leaf strong = {},weak = {}",Rc::strong_count(&leaf),Rc::weak_count(&leaf));
 }
 
 // 自建的一个list
@@ -116,3 +164,40 @@ enum ListRC {
 // 1： Rc<T>允许一份数据有多个持有者，而Box<T>,RefCell<T>都只有一个所有者。
 // 2： Box<T>允许在编译时检查的可变或者不可变借用，Rc<T>仅允许编译时检查的不可变借用，RefCell<T>允许运行时检查的可变或不可变借用。
 // 3： 由于RefCell<T>允许我们在运行时检查可变借用，所以即便RefCell<T>本身时不可变的，我们仍然能够更改其中存储的值。
+// 还要其它：
+// Cell<T>:相比与RefCell<T>;RefCell<T>是通过借用来实现内部数据的读写，Cell<T>选择通过复制来访问数据。
+// Mutex<T>:它被用于实现跨线程情形下的内部可变性模式。
+#[derive(Debug)]
+enum List_RefCell_Rc{
+    Cons_RefCell_Rc(Rc<RefCell<i32>>,Rc<List_RefCell_Rc>),
+    Nil_List_RefCell_Rc,
+}
+
+
+
+// # 循环引用样例，会导致内存不能够释放
+#[derive(Debug)]
+enum List_Cycle{
+    Cons_Cycle(i32,RefCell<Rc<List_Cycle>>),
+    Nil_Cycle,
+}
+
+impl List_Cycle {
+    fn tail(&self) -> Option<&RefCell<Rc<List_Cycle>>> {
+        match self {
+            Cons_Cycle(_,item) => Some(item),
+            Nil_Cycle=>None,
+        }
+    }
+}
+
+
+// # Weak<T>智能指针的使用
+// 相较于Rc::clone的强引用而言，Rc::downgrade得到的是一个Weak的弱引用,
+// 弱引用的计数不需要为0，只有强引用的计数为0了，生命周期就结束了。
+#[derive(Debug)]
+struct Node{
+    value:i32,
+    parent:RefCell<Weak<Node>>, // 父节点事弱引用，子节点不应该拥有父节点。
+    children:RefCell<Vec<Rc<Node>>>,// 共享所以子节点，所以用Rc包了一下。希望灵活修改节点的父子关心，所以用RefCell包了一下。
+}

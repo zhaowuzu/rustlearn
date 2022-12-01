@@ -57,7 +57,14 @@ mod tests{
         fn send(& self,message:&str){
             // 未使用RefCell前
             //self.sent_messages.push(String::from(message));
-            self.sent_messages.borrow_mut().push(String::from(message));
+            self.sent_messages.borrow_mut().push(String::from(message));// borrow_mut 可变引用 mut=mutation变化
+
+            // // 延时一个错误的使用，同一作用域创建2个可变借用，导致的pannic
+            // let mut one_borrow = self.sent_messages.borrow_mut();
+            // let mut two_borrow = self.sent_messages.borrow_mut();
+            //
+            // one_borrow.push(String::from(message));
+            // two_borrow.push(String::from(message));
         }
     }
 
@@ -68,7 +75,6 @@ mod tests{
 
         limit_tracker.set_value(80);
 
-        // 未使用RefCell前
-        assert_eq!(mock_messenger.sent_messages.borrow().len(),1);
+        assert_eq!(mock_messenger.sent_messages.borrow().len(),1); // borrow 不可变引用
     }
 }
