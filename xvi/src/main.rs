@@ -2,6 +2,7 @@ use std::thread;
 use std::time::Duration;
 use std::sync::mpsc;
 use std::sync::{Mutex,Arc};
+// std::marker 模块内的Sync trait 和 Send trait(转移所有权)
 
 fn main(){
    // let handle =  thread::spawn(||{
@@ -102,6 +103,9 @@ fn main(){
     // }
     // println!("m = {:?}",m);
 
+    // Arc 原子引用计数 也就是如果涉及到多线程，就需要Arc配合mutex
+    // Arc 是保证Mutex能够被多线程clone
+    // mutex则是可以进行多线程直接安全进行值访问和变更，当然需要记得加锁lock拿
     let counter = Arc::new(Mutex::new(0)); // Rc是不被用在多线程中的
     let mut handles = vec![];
     for _ in 0..10 {
@@ -116,4 +120,5 @@ fn main(){
         handle.join().unwrap()
     }
     println!("Result: {}",*counter.lock().unwrap());
+
 }
