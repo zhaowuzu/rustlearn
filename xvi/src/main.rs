@@ -1,6 +1,7 @@
 use std::thread;
 use std::time::Duration;
 use std::sync::mpsc;
+use std::sync::{Mutex,Arc};
 
 fn main(){
    // let handle =  thread::spawn(||{
@@ -19,7 +20,7 @@ fn main(){
    //
    //  //handle.join().unwrap();
 
-    // thread::spawn , join ,move 的使用
+    // # thread::spawn , join ,move 的使用
     let v = vec![1,2,3];
 
     let handle = thread::spawn(move ||{ // 强制闭包获取它所需值的所有权，而不仅仅是基于Rust的推导获取值的借用。
@@ -31,9 +32,10 @@ fn main(){
     handle.join().unwrap(); // join 做阻塞。
 
 
-    // 使用消息传递在线程间转移数据
+    // # 使用消息传递在线程间转移数据
     // mpsc=multiple producer,single consumer,多个生产者，单个消费者 m:1
     // 带有模式的let进行拆解
+    // 通道中传递的数据可以简单的理解为单一所有权，不应该在值传递给通道后再次使用它
     let (tx,rx) = mpsc::channel(); // 创建一个通道
     thread::spawn(move||{ // 用move 获取tx的所有权
         let val = String::from("hi");
@@ -86,7 +88,32 @@ fn main(){
         }
     });
 
-    for received in rx1{ // 不再显示调用recv,rx1视为迭代器
+    for received in rx1{ // 不再显示调用recv,rx1视为迭代器  会阻塞
         println!("Got:{}",received) // 输出的顺序不确定
     }
+
+    // # 基于共享内存的并发
+    // 类似多重所有权概念
+    // mutex(互斥体)= mutual exclusion
+    // let m = Mutex::new(5);
+    // {
+    //     let mut num = m.lock().unwrap(); // 阻塞当前线程直到我们取得锁为止
+    //     *num = 6;
+    // }
+    // println!("m = {:?}",m);
+
+    let counter = Arc::new(Mutex::new(0)); // Rc是不被用在多线程中的
+    let mut handles = vec![];
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter);// 获取多重所有权
+        let handle = thread::spawn(move||{
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        });
+        handles.push(handle)
+    }
+    for handle in handles {
+        handle.join().unwrap()
+    }
+    println!("Result: {}",*counter.lock().unwrap());
 }
