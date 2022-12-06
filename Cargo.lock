@@ -132,3 +132,11 @@ version = "0.1.0"
 [[package]]
 name = "xvi"
 version = "0.1.0"
+
+[[package]]
+name = "xvii"
+version = "0.1.0"
+
+[[package]]
+name = "xvii_blog"
+version = "0.1.0"

@@ -11,6 +11,8 @@ members = [
     "add_one",
     "xv",
     "xvi",
+    "xvii",
+    "xvii_blog",
 ]
 
 [profile.dev]
