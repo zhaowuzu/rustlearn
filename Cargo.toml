@@ -13,6 +13,7 @@ members = [
     "xvi",
     "xvii",
     "xvii_blog",
+    "xviii_pattern_matching",
 ]
 
 [profile.dev]

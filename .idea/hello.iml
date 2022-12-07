@@ -18,6 +18,7 @@
       <sourceFolder url="file://$MODULE_DIR$/xvi/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/xvii/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/xvii_blog/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xviii_pattern_matching/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/i_vii/src/learn_restaurant/my-project/target" />
     </content>
