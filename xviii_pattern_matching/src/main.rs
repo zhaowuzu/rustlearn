@@ -201,6 +201,43 @@ fn main() {
     //         println!("Some numbers:{}",second);
     //     }
     // }
+
+    // # 使用匹配守卫添加额外的条件
+    let num = Some(4);
+    match num {
+        Some(x) if x < 5 => println!("less than five:{}",x),
+        Some(x) => println!("{}",x),
+        None => (),
+    }
+    // 使用匹配守卫来测试some变体内的值是否与外部变量相等
+    let x = Some(5);
+    let y = 10;
+    match x {
+        Some(50) => println!("Got 50"),
+        Some(n) if n == y => println!("Match,n = {:?}",n),// if n== y 不是一个模式，所以不会引入新的变量，就会直接使用外部的y
+        _ => println!("Default case,x={:?}",x),
+    }
+    println!("at the end:x={:?},y={:?}",x,y);
+    // 将匹配守卫与多重模式组合使用
+    let x = 4;
+    let y = false;
+    match x {
+        4 | 5 | 6 if y => println!("yes"), // 优先级关系是 (4 | 5 | 6) if y
+        _ => println!("no"),
+    }
+    // 使用@运算符把值绑定到变量中
+    let msg = Message1::Hello {id:5};
+    match msg {
+        Message1::Hello {id:id_variable @ 3..=7} => { // 使用@  会把匹配成功的值赋值给id_variable。
+            println!("Found an id in range:{}",id_variable);
+        },
+        Message1::Hello {id:10..=12}=>{// 没有使用@  虽然会匹配成功，但不知道是10到12直接的哪个值
+            println!("Found an id another range");
+        },
+        Message1::Hello {id}=>{
+            println!("Found some other id:{}",id);
+        }
+    }
 }
 
 // 函数参数也是模式
@@ -238,4 +275,9 @@ struct Point1{
     x:i32,
     y:i32,
     z:i32,
+}
+
+// 使用@运算符把值绑定到变量中
+enum Message1{
+    Hello {id:i32}
 }
