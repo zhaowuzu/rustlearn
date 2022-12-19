@@ -96,3 +96,10 @@ fn split_at_mut(slice:&mut[i32],mid:usize) -> (&mut[i32],&mut[i32]){
         (slice::from_raw_parts_mut(ptr,mid),slice::from_raw_parts_mut(ptr.offset(mid as isize),len -mid))
     }
 }
+
+// 实现不安全traits
+// 都需要加unsafe
+unsafe trait Foo{}
+unsafe impl Foo for i32 {
+
+}

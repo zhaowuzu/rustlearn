@@ -281,10 +281,3 @@ struct Point1{
 enum Message1{
     Hello {id:i32}
 }
-
-// 实现不安全traits
-// 都需要加unsafe
-unsafe trait Foo{}
-unsafe impl Foo for i32 {
-
-}
