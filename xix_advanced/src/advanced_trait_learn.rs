@@ -1,5 +1,6 @@
 use std::ops::Add;
 use std::fmt;
+use std::fmt::{Display, Formatter, write};
 
 pub fn demo(){
     // # 运算符重载
@@ -14,6 +15,14 @@ pub fn demo(){
 
     println!("A baby dog is called a {}",Dog::baby_name());
     println!("A baby dog is called a {}",<Dog as Animal>::baby_name());// 完全限定
+
+    //# 超trait：trait依赖其它的trait的方法
+    let pp = Point1{x:20,y:54};
+    pp.outline_print(); // 会打印被包裹起来的的样子
+
+    //# 使用newtype模式在外部类型上实现外部trait
+    let w = Wrapper(vec![String::from("hello"),String::from("world")]);
+    println!("w = {}",w)
 }
 // 找一个标准库中的样例
 pub trait Iterator{
@@ -110,7 +119,31 @@ impl Animal for Dog {
 trait OutlinePrint:fmt::Display{
     fn outline_print(&self){
         let output = self.to_string();
-        let len = output.le();
+        let len = output.len();
+        println!("{}","*".repeat(len + 4));
+        println!("*{}*"," ".repeat(len + 2));
+        println!("* {} *",output);
+        println!("*{}*"," ".repeat(len + 2));
+        println!("{}","*".repeat(len + 4));
+    }
+}
+struct Point1{
+    x:i32,
+    y:i32,
+}
 
+impl Display for Point1 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f,"({},{})",self.x,self.y)
+    }
+}
+
+impl OutlinePrint for Point1 {}
+
+//# 使用newtype模式在外部类型上实现外部trait
+struct Wrapper(Vec<String>);
+impl fmt::Display for Wrapper{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f,"[{}]",self.0.join(", "))
     }
 }
