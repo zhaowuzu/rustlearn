@@ -1,6 +1,7 @@
 use std::fmt::Arguments;
 use std::io::Result;
 
+
 pub fn demo(){
     // # 使用类型别名创建同义类型
     let x:i32 = 5;
@@ -110,7 +111,7 @@ fn do_twice(f:fn(i32)->i32,arg:i32)-> i32 {
 //     |x| x+1
 // }
 // 优化
-fn returns_closure() -> Box<Fn(i32)-> i32> {
+fn returns_closure() -> Box<dyn Fn(i32)-> i32> {
      Box::new(|x| x+1)
 }
 
@@ -135,3 +136,8 @@ macro_rules! vec {
         }
     };
 }
+// // // 过程宏
+// // #[some_attribute]
+// // pub fn some_name(input:TokenStream) -> TokenStream {
+//
+// }
