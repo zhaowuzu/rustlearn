@@ -45,10 +45,21 @@ impl ThreadPool{
         self.sender.send(job).unwrap()
     }
 }
+impl Drop for ThreadPool{
+    fn drop(&mut self) {
+        for worker in & mut self.workers{
+            println!("Shutting down worker {}",worker.id);
+
+            if let Some(thread) = worker.thread.take(){
+                thread.join().unwrap();
+            }
+        }
+    }
+}
 
 struct Worker{
     id: usize,
-    thread: thread::JoinHandle<()>,
+    thread: Option<thread::JoinHandle<()>>,// 利用Option的take方法将Some变体的值移出来，而在原来的位置留下None变体
 }
 
 impl Worker {
@@ -60,18 +71,18 @@ impl Worker {
                 println!("Worker {} got a job; executing.",id);
                 job();
             }
-            // 一种错误的用法
-            // 原因nutex没有存在unlock方法，依赖MutexGuard<T>的生命周期。
-            // while表达式内的值会把整个代码视作自己的作用域，我们在调用job()的过程中仍然持有着receiver的锁
-            while let Ok(job) = receiver.lock().unwrap().recv(){
-                println!("Worker {} got a job; executing.",id);
-                job();
-            }
+            // // 一种错误的用法
+            // // 原因nutex没有存在unlock方法，依赖MutexGuard<T>的生命周期。
+            // // while表达式内的值会把整个代码视作自己的作用域，我们在调用job()的过程中仍然持有着receiver的锁
+            // while let Ok(job) = receiver.lock().unwrap().recv(){
+            //     println!("Worker {} got a job; executing.",id);
+            //     job();
+            // }
         });
 
         Worker{
             id,
-            thread,
+            thread:Some(thread),// 用Some包一下子
         }
     }
 }
