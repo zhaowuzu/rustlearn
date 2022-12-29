@@ -16,6 +16,7 @@ members = [
     "xviii_pattern_matching",
     "xix_advanced",
     "web_hello",
+    "tonic_grpc",
 ]
 
 [profile.dev]
