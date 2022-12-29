@@ -3,7 +3,7 @@ use std::thread;
 
 pub struct ThreadPool{
     workers:Vec<Worker>,
-    sender:mpsc::Sender<Job>, // 发生端
+    sender:mpsc::Sender<Message>, // 发生端
 }
 
 type Job = Box<dyn FnOnce() + Send + 'static>; // Job 存放一个trait，而且还做了相关的限定
@@ -42,14 +42,23 @@ impl ThreadPool{
         F:FnOnce() + Send + 'static
     {
         let job = Box::new(f);
-        self.sender.send(job).unwrap()
+        self.sender.send(Message::NewJob(job)).unwrap()
     }
 }
 impl Drop for ThreadPool{
     fn drop(&mut self) {
+        println!("Sending terminate message to all workers.");
+
+        // 向所有的工作者发送关闭通知
+        for _ in &mut self.workers {
+            self.sender.send(Message::Terminate).unwrap();
+        }
+
+        println!("Shutting down all workers.");
+
         for worker in & mut self.workers{
             println!("Shutting down worker {}",worker.id);
-
+            // 使用take把移植过来，并在原来位置放置一个None
             if let Some(thread) = worker.thread.take(){
                 thread.join().unwrap();
             }
@@ -63,14 +72,23 @@ struct Worker{
 }
 
 impl Worker {
-    fn new(id :usize,receiver:Arc::<Mutex<mpsc::Receiver<Job>>>)->Worker {
+    fn new(id :usize,receiver:Arc::<Mutex<mpsc::Receiver<Message>>>)->Worker {
         // TODO thread::spawn 创建后会直接执行？？
         let thread = thread::spawn(move ||{ // move 将引用的变量的所有权转移至闭包内，通常用于使闭包的生命周期大于所捕获的变量的原生命周期（例如将闭包返回或移至其他线程）
             loop{
-                let job = receiver.lock().unwrap().recv().unwrap();
-                println!("Worker {} got a job; executing.",id);
-                job();
+                let message = receiver.lock().unwrap().recv().unwrap();
+                match message {
+                    Message::NewJob(job) => {
+                        println!("Worker {} got a job; executing.",id);
+                        job();
+                    },
+                    Message::Terminate => {
+                        println!("Worker {} was told to terminate.",id);
+                        break
+                    }
+                }
             }
+
             // // 一种错误的用法
             // // 原因nutex没有存在unlock方法，依赖MutexGuard<T>的生命周期。
             // // while表达式内的值会把整个代码视作自己的作用域，我们在调用job()的过程中仍然持有着receiver的锁
@@ -78,6 +96,7 @@ impl Worker {
             //     println!("Worker {} got a job; executing.",id);
             //     job();
             // }
+
         });
 
         Worker{
@@ -85,4 +104,9 @@ impl Worker {
             thread:Some(thread),// 用Some包一下子
         }
     }
+}
+
+enum Message{
+    NewJob(Job), // 这个其实使给变体NewJob关联一个Job类型的值
+    Terminate,
 }

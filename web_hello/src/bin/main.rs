@@ -10,6 +10,8 @@ fn main() {
    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(4);
 
+    // .take(2) 模拟只会接收2次通知就会结束循环
+    //for stream in listener.incoming().take(2){
     for stream in listener.incoming(){
         let stream = stream.unwrap();
 
@@ -22,6 +24,8 @@ fn main() {
         pool.execute(||{
             handle_connection(stream);
         });
+
+        println!("Shutting down.")
     }
 }
 
