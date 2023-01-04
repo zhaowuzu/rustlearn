@@ -17,6 +17,7 @@ members = [
     "xix_advanced",
     "web_hello",
     "tonic_grpc",
+    "my_tokio",
 ]
 
 [profile.dev]
