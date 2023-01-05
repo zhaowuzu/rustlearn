@@ -2,26 +2,46 @@
 name = "my_tokio"
 version = "0.1.0"
 edition = "2021"
+
+# runtime
 [[bin]] # 用来运行 HelloWorld
 name = "helloworld_tokio"
-path = "src/helloworld.rs"
+path = "src/runtime/helloworld.rs"
 [[bin]]
 name = "runtime_tokio"
-path = "src/runtime.rs"
+path = "src/runtime/runtime.rs"
 [[bin]]
 name = "main_tokio"
-path = "src/main.rs"
+path = "src/runtime/main.rs"
 [[bin]]
 name = "multi_runtime_tokio"
-path = "src/multi_runtime.rs"
+path = "src/runtime/multi_runtime.rs"
 [[bin]]
 name = "in_runtime_async_tokio"
-path = "src/in_runtime_async.rs"
+path = "src/runtime/in_runtime_async.rs"
 [[bin]]
 name = "in_runtime_spawn_tokio"
-path = "src/in_runtime_spawn.rs"
+path = "src/runtime/in_runtime_spawn.rs"
+[[bin]]
+name = "in_runtime_enter_tokio"
+path = "src/runtime/in_runtime_enter.rs"
+[[bin]]
+name = "in_runtime_thread_tokio"
+path = "src/runtime/in_runtime_thread.rs"
+[[bin]]
+name = "in_runtime_drop_tokio"
+path = "src/runtime/in_runtime_drop.rs"
+[[bin]]
+name = "runtime_handle_tokio"
+path = "src/runtime/runtime_handle.rs"
+[[bin]]
+name = "multi_single_runtime_tokio"
+path = "src/runtime/multi_single_runtime.rs"
 
-
+#task
+[[bin]]
+name = "task_creat_tokio"
+path = "src/task/task_creat.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
