@@ -45,6 +45,32 @@ path = "src/task/task_creat.rs"
 [[bin]]
 name = "task_abort_tokio"
 path = "src/task/task_abort.rs"
+[[bin]]
+name = "task_join_tokio"
+path = "src/task/task_join.rs"
+[[bin]]
+name = "task_localset_tokio"
+path = "src/task/task_localset.rs"
+[[bin]]
+name = "task_select_tokio"
+path = "src/task/task_select.rs"
+
+# Timer
+[[bin]]
+name = "timer_duration_tokio"
+path = "src/timer/timer_duration.rs"
+[[bin]]
+name = "timer_instant_tokio"
+path = "src/timer/timer_instant.rs"
+[[bin]]
+name = "timer_sleep_tokio"
+path = "src/timer/timer_sleep.rs"
+[[bin]]
+name = "timer_timeout_tokio"
+path = "src/timer/timer_timeout.rs"
+[[bin]]
+name = "timer_interval_tokio"
+path = "src/timer/timer_interval.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
