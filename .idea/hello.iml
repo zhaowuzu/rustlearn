@@ -23,6 +23,7 @@
       <sourceFolder url="file://$MODULE_DIR$/web_hello/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tonic_grpc/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/my_tokio/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/my_iptables/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/i_vii/src/learn_restaurant/my-project/target" />
     </content>
